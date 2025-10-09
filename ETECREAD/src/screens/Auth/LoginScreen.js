@@ -31,15 +31,9 @@ export default function LoginScreen() {
       <StatusBar barStyle="light-content" />
 
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color="#8b3333" />
-        </TouchableOpacity>
         
         <View style={styles.logoContainer}>
-          <Text style={styles.logoText}>cps</Text>
+          <Text style={styles.logoText}>Cps</Text>
           <Text style={styles.logoSubtext}>CENTRO PAULA SOUZA</Text>
         </View>
 
@@ -112,7 +106,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#4a2828',
+    backgroundColor: '#A11922',
   },
   header: {
     backgroundColor: '#8b3333',
@@ -163,8 +157,6 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     backgroundColor: '#fff',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
     marginTop: -20,
     paddingHorizontal: 32,
     paddingTop: 40,
