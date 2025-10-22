@@ -1,39 +1,75 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, HomeStylesheet, FlatList, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import BookListItem from '../../components/book/BookListItem'; 
-
-const MOCK_BOOKS = [
-  { id: '1', title: 'O Alienista', author: 'Machado de Assis', coverUrl: 'https://via.placeholder.com/60x90' },
-  { id: '2', title: 'Dom Casmurro', author: 'Machado de Assis', coverUrl: 'https://via.placeholder.com/60x90' },
-  { id: '3', title: 'Memórias Póstumas de Brás Cubas', author: 'Machado de Assis', coverUrl: 'https://via.placeholder.com/60x90' },
-  { id: '4', title: 'Iracema', author: 'José de Alencar', coverUrl: 'https://via.placeholder.com/60x90' },
-];
+import HomeStyles from '../../components/ScreensStyles/Homestyles';
 
 const HomeScreen = () => {
-  return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.headerTitle}>Principais Destaques</Text>
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('https://www.googleapis.com/books/v1/volumes?q=inauthor:"machado+de+assis"&maxResults=10');
+        const data = await response.json();
+
+        const formattedBooks = data.items.map(item => ({
+          id: item.id,
+          title: item.volumeInfo.title,
+          author: item.volumeInfo.authors ? item.volumeInfo.authors[0] : 'Autor desconhecido',
+          coverUrl: item.volumeInfo.imageLinks?.thumbnail,
+          publishedDate: item.volumeInfo.publishedDate || 'Data desconhecida',
+        }));
+
+        setBooks(formattedBooks);
+        setError(null);
+
+      } catch (err) {
+        setError('Falha ao carregar os livros. Tente novamente.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
+  }, []);
+
+  // Função para renderizar o conteúdo principal
+  const renderContent = () => {
+    if (loading) {
+      // Mostra um indicador de carregamento
+      return <ActivityIndicator size="large" color="#800F0F" style={HomeStyles.loader} />;
+    }
+
+    if (error) {
+      // Mostra uma mensagem de erro
+      return <Text style={HomeStyles.errorText}>{error}</Text>;
+    }
+
+    // Mostra a lista de livros
+    return (
       <FlatList
-        data={MOCK_BOOKS} 
-        renderItem={({ item }) => <BookListItem book={item} />} 
-        keyExtractor={item => item.id} 
+        data={books}
+        renderItem={({ item }) => <BookListItem book={item} />}
+        keyExtractor={item => item.id}
+        contentContainerStyle={{ paddingBottom: 20 }}
       />
+    );
+  };
+
+  return (
+    <SafeAreaView style={HomeStyles.container}>
+      <View style={HomeStyles.header}>
+        <Text style={HomeStyles.mainText}>Principais destaques</Text>
+      </View>
+      {renderContent()} 
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f8f8',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    padding: 15,
-    color: '#8B0000', 
-  },
-});
 
 export default HomeScreen;

@@ -1,46 +1,36 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
+import BookStyle from './BookStyle';
 
+// Este componente recebe um 'book' como propriedade,
+// que virá da API 
 const BookListItem = ({ book }) => {
-  return (
 
-    <TouchableOpacity style={styles.container}>
-      <Image source={{ uri: book.coverUrl }} style={styles.coverImage} />
-      <View style={styles.infoContainer}>
-        <Text style={styles.title}>{book.title}</Text>
-        <Text style={styles.author}>{book.author}</Text>
+  const title = book.title || 'Título indisponível';
+  const author = book.author || 'Autor desconhecido';
+  const publishedDate = book.publishedDate || 'Data desconhecida';
+  const coverUrl = book.coverUrl; 
+
+  return (
+    <View style={BookStyle.card}>
+      <View style={BookStyle.infoContainer}>
+        <Text style={BookStyle.title} numberOfLines={2}>{title}</Text>
+        <Text style={BookStyle.author}>{author}</Text>
+        <Text style={BookStyle.date}>{publishedDate}</Text>
+        <TouchableOpacity style={BookStyle.button}>
+          <Text style={BookStyle.buttonText}>ALUGAR</Text>
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+      {coverUrl ? (
+        <Image source={{ uri: coverUrl }} style={BookStyle.coverImage} />
+      ) : (
+        <View style={BookStyle.placeholder}>
+          <Text style={BookStyle.placeholderText}>X</Text>
+        </View>
+      )}
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row', // Alinha a imagem e o texto lado a lado
-    padding: 10,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    alignItems: 'center', // Centraliza os itens verticalmente
-  },
-  coverImage: {
-    width: 60,
-    height: 90,
-    marginRight: 15,
-    borderRadius: 5,
-  },
-  infoContainer: {
-    flex: 1, // Faz com que o container de informações ocupe o espaço restante
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  author: {
-    fontSize: 14,
-    color: '#666',
-  },
-});
 
 export default BookListItem;
